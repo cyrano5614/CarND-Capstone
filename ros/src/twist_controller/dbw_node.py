@@ -67,11 +67,14 @@ class DBWNode(object):
         self.brake_pub = rospy.Publisher('/vehicle/brake_cmd',
                                          BrakeCmd, queue_size=1)
 
+        # Create controller object
         self.controller = Controller(Parameters)
 
+        # Class variables
         self.dbw_enabled = False
         self.current_velocity = None
         self.twist_cmd = None
+        self.previous_time = rospy.get_time()
 
         # Subscribers
         rospy.Subscriber('/current_velocity', TwistStamped,
@@ -87,15 +90,18 @@ class DBWNode(object):
         """loop"""
         rate = rospy.Rate(50)  # 50Hz
         while not rospy.is_shutdown():
-            throttle, brake, steering = self.controller.contrl(arg1,
-                                                               arg2,
-                                                               arg3,
-                                                               arg4,
-                                                               arg5)
+
+            current_time = rospy.get_time()
+            time_interval = current_time - self.previous_time
+
+            throttle, brake, steering = self.controller.control(self.twist_cmd,
+                                                                self.current_velocity,
+                                                                time_interval)
 
             if self.dbw_enabled:
                 self.publish(throttle, brake, steering)
 
+            self.previous_time = current_time
             rate.sleep()
 
     def current_velocity_cb(self, msg):
