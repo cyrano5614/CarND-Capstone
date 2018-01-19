@@ -90,17 +90,20 @@ class DBWNode(object):
         """loop"""
         rate = rospy.Rate(50)  # 50Hz
         while not rospy.is_shutdown():
-        and self.twist_cmd is not None:
-
             current_time = rospy.get_time()
             time_interval = current_time - self.previous_time
 
-            throttle, brake, steering = self.controller.control(self.twist_cmd,
-                                                                self.current_velocity,
-                                                                time_interval)
+            if self.twist_cmd is not None and self.current_velocity is not None:
+
+
+                throttle, brake, steering = self.controller.control(self.twist_cmd,
+                                                                    self.current_velocity,
+                                                                    time_interval)
 
             if self.dbw_enabled:
                 self.publish(throttle, brake, steering)
+            else:
+                self.controller.reset()
 
             self.previous_time = current_time
             rate.sleep()
