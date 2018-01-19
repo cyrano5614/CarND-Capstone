@@ -68,7 +68,7 @@ class DBWNode(object):
                                          BrakeCmd, queue_size=1)
 
         # Create controller object
-        self.controller = Controller(Parameters)
+        self.controller = Controller(**Parameters)
 
         # Class variables
         self.dbw_enabled = False
@@ -90,6 +90,7 @@ class DBWNode(object):
         """loop"""
         rate = rospy.Rate(50)  # 50Hz
         while not rospy.is_shutdown():
+        and self.twist_cmd is not None:
 
             current_time = rospy.get_time()
             time_interval = current_time - self.previous_time
