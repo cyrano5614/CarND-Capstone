@@ -10,25 +10,19 @@ from twist_controller import Controller
 
 '''
 You can build this node only after you have built (or partially built) the `waypoint_updater` node.
-
 You will subscribe to `/twist_cmd` message which provides the proposed linear and angular velocities.
 You can subscribe to any other message that you find important or refer to the document for list
 of messages subscribed to by the reference implementation of this node.
-
 One thing to keep in mind while building this node and the `twist_controller` class is the status
 of `dbw_enabled`. While in the simulator, its enabled all the time, in the real car, that will
 not be the case. This may cause your PID controller to accumulate error because the car could
 temporarily be driven by a human instead of your controller.
-
 We have provided two launch files with this node. Vehicle specific values (like vehicle_mass,
 wheel_base) etc should not be altered in these files.
-
 We have also provided some reference implementations for PID controller and other utility classes.
 You are free to use them or build your own.
-
 Once you have the proposed throttle, brake, and steer values, publish it on the various publishers
 that we have created in the `__init__` function.
-
 '''
 
 class DBWNode(object):
@@ -76,6 +70,12 @@ class DBWNode(object):
         self.twist_cmd = None
         self.previous_time = rospy.get_time()
 
+        # Class variables
+        self.dbw_enabled = False
+        self.current_velocity = None
+        self.twist_cmd = None
+        self.previous_time = rospy.get_time()
+
         # Subscribers
         rospy.Subscriber('/current_velocity', TwistStamped,
                          self.current_velocity_cb, queue_size=1)
@@ -111,7 +111,6 @@ class DBWNode(object):
     def current_velocity_cb(self, msg):
         """current_velocity_cb
         Callback function for current_velocity
-
         :param msg:
             [geometry_msgs/TwistStamped]:
             std_msgs/Header header
@@ -133,7 +132,6 @@ class DBWNode(object):
     def dbw_enabled_cb(self, msg):
         """dbw_enabled_cb
         Callback function for dbw_enabled
-
         :param msg:
             [std_msgs/Bool]:
             bool data
@@ -143,7 +141,6 @@ class DBWNode(object):
     def twist_cmd_cb(self, msg):
         """twist_cmd_cb
         Callback function for twist_cmd
-
         :param msg:
             [geometry_msgs/TwistStamped]:
             std_msgs/Header header
@@ -165,7 +162,6 @@ class DBWNode(object):
     def publish(self, throttle, brake, steer):
         """publish
         Publish the control values to the cmd nodes
-
         :param throttle:
         :param brake:
         :param steer:

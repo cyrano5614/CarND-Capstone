@@ -35,10 +35,6 @@ class Controller(object):
 
     def control(self, twist_cmd, current_velocity, time_interval):
         """control
-
-        :param twist_cmd:
-        :param current_velocity:
-        :param time_interval:
         """
         # Calculate throttle
         target_velocity = twist_cmd.twist.linear.x
